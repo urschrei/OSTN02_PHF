@@ -27,7 +27,7 @@ fn main() {
     let mut stmt = conn.prepare("SELECT key, eastings_offset, northings_offset, height_offset \
                                  FROM ostn02")
                        .unwrap();
-    let mut ostn02_iter = stmt.query_map(&[], |row| {
+    let ostn02_iter = stmt.query_map(&[], |row| {
                                   Shift {
                                       key: row.get(0),
                                       eastings: row.get(1),
@@ -42,11 +42,10 @@ fn main() {
 
     for each in ostn02_iter {
         let record = each.unwrap();
-        let key = record.key.clone();
-        keys.push(key);
-        values.push((record.eastings.clone(),
-                     record.northings.clone(),
-                     record.height.clone()));
+        keys.push(record.key);
+        values.push((record.eastings,
+                     record.northings,
+                     record.height));
     }
     let results: Vec<_> = keys.iter().zip(values.iter()).collect();
     let mut map = phf_codegen::Map::<&str>::new();

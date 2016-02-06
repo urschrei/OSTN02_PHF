@@ -1,13 +1,16 @@
 [package]
 name = "ostn02_phf"
+description = "A PHF map of the OSTN02 grid shifts for use in transforming ETRS89 grid coordinates to OSGB36. Users should acknowledge Crown Copyright (C) 2016"
+keywords = ["Geo", "ETRS89", "OSGB36"]
 version = "0.1.0"
 authors = ["Stephan Hügel <urschrei@gmail.com>"]
+license = "MIT"
 
-build = "src/build.rs"
+# build = "src/build.rs"
 
 [build-dependencies]
 phf_codegen = "0.7.12"
+# rusqlite = "0.6.0"
 
 [dependencies]
 phf = "0.7.12"
-
