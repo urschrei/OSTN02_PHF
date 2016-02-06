@@ -1,0 +1,13 @@
+[package]
+name = "ostn02_phf"
+version = "0.1.0"
+authors = ["Stephan Hügel <urschrei@gmail.com>"]
+
+build = "src/build.rs"
+
+[build-dependencies]
+phf_codegen = "0.7.12"
+
+[dependencies]
+phf = "0.7.12"
+
