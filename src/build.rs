@@ -1,4 +1,6 @@
 extern crate phf_codegen;
+extern crate rusqlite;
+use rusqlite::Connection;
 
 use std::fs::File;
 use std::io::prelude::*;
@@ -6,22 +8,49 @@ use std::io::BufWriter;
 
 const GENERATED_FILE: &'static str = "src/ostn02.rs";
 
-fn main() {
-    let keys = vec!["13928b", "13928c", "13a28b", "13a28c"];
-    let values: Vec<(_, _, _)> = vec![(16500, 3359, 270),
-                                      (16538, 3357, 254),
-                                      (16508, 3387, 258),
-                                      (16547, 3376, 242)];
+#[derive(Debug)]
+struct Shift {
+    key: String,
+    eastings: f64,
+    northings: f64,
+    height: f64,
+}
 
-    let ostn02: Vec<_> = keys.iter()
-                             .zip(values.iter())
-                             .collect();
+fn main() {
+    let conn = Connection::open("src/OSTN02.db").unwrap();
+
     let mut outfile = BufWriter::new(File::create(GENERATED_FILE).unwrap());
     write!(outfile,
            "static OSTN02: phf::Map<&'static str, (i32, i32, i32)> = ")
         .unwrap();
+
+    let mut stmt = conn.prepare("SELECT key, eastings_offset, northings_offset, height_offset \
+                                 FROM ostn02")
+                       .unwrap();
+    let mut ostn02_iter = stmt.query_map(&[], |row| {
+                                  Shift {
+                                      key: row.get(0),
+                                      eastings: row.get(1),
+                                      northings: row.get(2),
+                                      height: row.get(3),
+                                  }
+                              })
+                              .unwrap();
+
+    let mut keys = vec![];
+    let mut values = vec![];
+
+    for each in ostn02_iter {
+        let record = each.unwrap();
+        let key = record.key.clone();
+        keys.push(key);
+        values.push((record.eastings.clone(),
+                     record.northings.clone(),
+                     record.height.clone()));
+    }
+    let results: Vec<_> = keys.iter().zip(values.iter()).collect();
     let mut map = phf_codegen::Map::<&str>::new();
-    for &(ref key, val) in &ostn02 {
+    for &(ref key, val) in &results {
         map.entry(key, &format!("{:?}", val));
     }
     map.build(&mut outfile).unwrap();
