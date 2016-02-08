@@ -2,8 +2,8 @@
 name = "ostn02_phf"
 description = "A PHF map of the OSTN02 grid shifts for use in transforming ETRS89 grid coordinates to OSGB36"
 repository = "https://github.com/urschrei/OSTN02_PHF"
-keywords = ["Geo", "ETRS89", "OSGB36"]
-version = "0.1.1"
+keywords = ["Geo", "ETRS89", "OSGB36", "OSTN02"]
+version = "0.1.2"
 authors = ["Stephan Hügel <urschrei@gmail.com>"]
 license = "MIT"
 
