@@ -25,7 +25,7 @@ fn main() {
         .unwrap();
 
     let mut stmt = conn.prepare("SELECT key, eastings_offset, northings_offset, height_offset \
-                                 FROM ostn02")
+                                 FROM ostn02 LIMIT 10")
                        .unwrap();
     let ostn02_iter = stmt.query_map(&[], |row| {
                                   Shift {
