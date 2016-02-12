@@ -1,3 +1,4 @@
+#![doc(html_root_url = "https://urschrei.github.io/ostn02_phf/")]
 //! Look up OSTN02 adjustments for transforming ETRS89 Eastings and Northings
 //! to OSGB36 Eastings and Northings
 //!
