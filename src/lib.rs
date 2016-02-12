@@ -34,7 +34,6 @@ pub struct GridRefs {
     pub northing: uint32_t,
 }
 
-
 #[repr(C)]
 #[derive(Debug)]
 /// Outgoing OSTN02 Easting, Northing, and height adjustments
@@ -149,7 +148,6 @@ pub fn ostn02_lookup(key: &str) -> Option<(i32, i32, i32)> {
     }
     OSTN02.get(&*key).cloned()
 }
-
 
 #[test]
 fn test_internal_ffi() {
