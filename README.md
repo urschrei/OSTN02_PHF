@@ -62,6 +62,15 @@ The FFI function **does not** require the calculation above; it returns the actu
 
     print lib.get_shifts_ffi(tup)
 
+# Building the Shared Library
+- Ensure that [Rust](https://www.rust-lang.org/downloads.html) is installed
+- Clone this repo
+- In the repo root, run `cargo build --release`
+- The dylib or DLL will be available as `target/release/libostn02_phf.{dylib, dll}`
+- If you need to build a `.so` for Linux:
+    1. `ar -x target/release/liblonlat_bng.a`
+    2. `gcc -shared *.o -o target/release/libostn02_phf.so`
+
 # License
 [MIT](LICENSE)  
 
