@@ -10,43 +10,64 @@ extern crate phf;
 include!("ostn02.rs");
 
 extern crate libc;
-use libc::{c_void, c_double, c_int};
+use libc::{c_double, uint32_t};
 
-fn get_shifts(tup: (i32, i32)) -> (c_double, c_double, c_double) {
-    // look up the shifts, or return 0.0
+/// Return a 3-tuple of adjustments which convert ETRS89 Eastings and Northings
+/// to OSGB36 Eastings, Northings, and Orthometric height
+fn get_shifts(tup: (u32, u32)) -> (f64, f64, f64) {
+    // look up the shifts, or return 9999.000
     let key = format!("{:03x}{:03x}", tup.1, tup.0);
     // some or None, so try! this
     match ostn02_lookup(&*key) {
         Some(res) => {
-            (res.0 as c_double / 1000. + MIN_X_SHIFT,
-             res.1 as c_double / 1000. + MIN_Y_SHIFT,
-             res.2 as c_double / 1000. + MIN_Z_SHIFT)
+            (res.0 as f64 / 1000. + MIN_X_SHIFT,
+             res.1 as f64 / 1000. + MIN_Y_SHIFT,
+             res.2 as f64 / 1000. + MIN_Z_SHIFT)
         }
-        None => (9999.0 as c_double, 9999.0 as c_double, 9999.0 as c_double),
+        None => (9999.000, 9999.000, 9999.000),
     }
 }
 
-
 #[repr(C)]
-/// Incoming kilometer-grid references
+/// Incoming ETRS89 kilometer-grid references
 pub struct GridRefs {
-    pub easting: c_int,
-    pub northing: c_int,
+    pub easting: uint32_t,
+    pub northing: uint32_t,
 }
 
+
 #[repr(C)]
-/// Outgoing shifts
+#[derive(Debug)]
+/// Outgoing OSTN02 Easting, Northing, and height adjustments
 pub struct Adjustment {
     pub x_shift: c_double,
     pub y_shift: c_double,
     pub z_shift: c_double,
 }
 
-impl From<(i32, i32)> for GridRefs {
-    fn from(gridref: (i32, i32)) -> GridRefs {
+// From and Into traits for GridRefs
+impl From<(u32, u32)> for GridRefs {
+    fn from(gr: (u32, u32)) -> GridRefs {
         GridRefs {
-            easting: gridref.0,
-            northing: gridref.1,
+            easting: gr.0,
+            northing: gr.1,
+        }
+    }
+}
+
+impl From<GridRefs> for (u32, u32) {
+    fn from(gr: GridRefs) -> (u32, u32) {
+        (gr.easting, gr.northing)
+    }
+}
+
+// From and Into traits for Adjustment
+impl From<(f64, f64, f64)> for Adjustment {
+    fn from(adj: (f64, f64, f64)) -> Adjustment {
+        Adjustment {
+            x_shift: adj.0,
+            y_shift: adj.1,
+            z_shift: adj.2,
         }
     }
 }
@@ -57,6 +78,47 @@ impl From<Adjustment> for (f64, f64, f64) {
     }
 }
 
+/// FFI function returning a 3-tuple of Easting, Northing, and height adjustments, for use in transforming
+/// ETRS89 Eastings and Northings to OSGB36 Eastings, Northings.  
+/// The argument is a Struct containing kilometer-grid references of the ETRS89 Northings and Eastings you wish to convert
+/// 
+/// # Examples
+/// 
+/// ```python
+/// # Python example using ctypes
+/// import sys, ctypes
+/// from ctypes import c_uint32, c_double, Structure
+/// 
+/// 
+/// class GridRefs(Structure):
+///     _fields_ = [("eastings", c_uint32),
+///                 ("northings", c_uint32)]
+/// 
+///     def __str__(self):
+///         return "({},{})".format(self.eastings, self.northings)
+/// 
+/// 
+/// class Shifts(Structure):
+///     _fields_ = [("x_shift", c_double),
+///                 ("y_shift", c_double),
+///                 ("z_shift", c_double)]
+/// 
+///     def __str__(self):
+///         return "({}, {}, {})".format(self.x_shift, self.y_shift, self.z_shift)
+/// 
+/// 
+/// prefix = {'win32': ''}.get(sys.platform, 'lib')
+/// extension = {'darwin': '.dylib', 'win32': '.dll'}.get(sys.platform, '.so')
+/// lib = ctypes.cdll.LoadLibrary(prefix + "ostn02_phf" + extension)
+/// 
+/// lib.get_shifts_ffi.argtypes = (GridRefs,)
+/// lib.get_shifts_ffi.restype = Shifts
+/// 
+/// tup = GridRefs(651, 313)
+/// 
+/// # Should return (102.775, -78.244, 44.252)
+/// print lib.get_shifts_ffi(tup)
+/// ```
 #[no_mangle]
 pub extern "C" fn get_shifts_ffi(gr: GridRefs) -> Adjustment {
     get_shifts(gr.into()).into()
@@ -87,4 +149,15 @@ pub fn ostn02_lookup(key: &str) -> Option<(i32, i32, i32)> {
         return None;
     }
     OSTN02.get(&*key).cloned()
+}
+
+
+#[test]
+fn test_internal_ffi() {
+    assert_eq!((9999.000, 9999.000, 9999.000), get_shifts((615, 314)));
+}
+
+#[test]
+fn test_ffi() {
+    assert_eq!((9999.000, 9999.000, 9999.000), get_shifts_ffi((615, 314)));
 }
