@@ -1,7 +1,18 @@
 # Description
-A Rust Crate which provides fast lookup of OSTN02 adjustments, for the conversion of ETRS89 grid coordinates to OSGB36.
+A Rust Crate which provides fast lookup of OSTN02 adjustments, for the conversion of ETRS89 grid coordinates to OSGB36.  
 
-# Example
+The crate provides base shifts. In order to obtain the actual shifts, divide each shift by `1000.`, then subtract the minimum Easting, Northing, and Height shift. All calculations should be done using double-precision floating point.
+
+Minimum Easting shift = `86.275`  
+Minimum Northing shift = `-81.603`  
+Minimum height shift = `43.982`  
+
+Base shifts for `651, 313`: `(16500, 3359, 270)`  
+Actual shifts: `(102.775, -78.244, 44.252)`  
+
+The FFI function **does not** require the calculation above; it returns the actual shifts.
+
+# Rust Crate Example
     // The key is the combined hex-transformed (03x) kilometer-grid reference of the ETRS89 Northings and Eastings coordinates
     use ostn02_phf::ostn02_lookup;
     // Caister Tower Eastings and Northings: 651307.003, 313255.686
@@ -14,6 +25,40 @@ A Rust Crate which provides fast lookup of OSTN02 adjustments, for the conversio
     assert_eq!(result, (16500, 3359, 270));
     // remember that the actual adjustment for a coordinate is a bilinear transform, using a square
     // see ostn02_shifts in https://github.com/urschrei/lonlat_bng/blob/master/src/ostn02/mod.rs
+
+# FFI Example
+    # using Python
+    import sys, ctypes
+    from ctypes import c_uint32, c_double, Structure
+
+
+    class GridRefs(Structure):
+        _fields_ = [("eastings", c_uint32),
+                    ("northings", c_uint32)]
+
+        def __str__(self):
+            return "({},{})".format(self.eastings, self.northings)
+
+
+    class Shifts(Structure):
+        _fields_ = [("x_shift", c_double),
+                    ("y_shift", c_double),
+                    ("z_shift", c_double)]
+
+        def __str__(self):
+            return "({}, {}, {})".format(self.x_shift, self.y_shift, self.z_shift)
+
+
+    prefix = {'win32': ''}.get(sys.platform, 'lib')
+    extension = {'darwin': '.dylib', 'win32': '.dll'}.get(sys.platform, '.so')
+    lib = ctypes.cdll.LoadLibrary(prefix + "ostn02_phf" + extension)
+
+    lib.get_shifts_ffi.argtypes = (GridRefs,)
+    lib.get_shifts_ffi.restype = Shifts
+
+    tup = GridRefs(651, 313)
+
+    print lib.get_shifts_ffi(tup)
 
 # License
 [MIT](LICENSE)  
