@@ -1,7 +1,6 @@
-#![doc(html_root_url = "https://urschrei.github.io/ostn02_phf/")]
+#![doc(html_root_url = "https://urschrei.github.io/OSTN02_PHF/")]
 //! Look up OSTN02 adjustments for transforming ETRS89 Eastings and Northings
 //! to OSGB36 Eastings and Northings
-//!
 
 const MIN_X_SHIFT: f64 = 86.275;
 const MIN_Y_SHIFT: f64 = -81.603;
@@ -18,7 +17,6 @@ use libc::{c_double, uint32_t};
 fn get_shifts(tup: (u32, u32)) -> (f64, f64, f64) {
     // look up the shifts, or return 9999.000
     let key = format!("{:03x}{:03x}", tup.1, tup.0);
-    // some or None, so try! this
     match ostn02_lookup(&*key) {
         Some(res) => {
             (res.0 as f64 / 1000. + MIN_X_SHIFT,
@@ -155,10 +153,11 @@ pub fn ostn02_lookup(key: &str) -> Option<(i32, i32, i32)> {
 
 #[test]
 fn test_internal_ffi() {
-    assert_eq!((9999.000, 9999.000, 9999.000), get_shifts((615, 314)));
+    assert_eq!((102.775, -78.244, 44.252), get_shifts((651, 313)));
 }
 
 #[test]
 fn test_ffi() {
-    assert_eq!((9999.000, 9999.000, 9999.000), get_shifts_ffi((615, 314)));
+    let gr = GridRefs {easting: 651, northing: 313};
+    assert_eq!((102.775, -78.244, 44.252), get_shifts_ffi(gr).into());
 }
