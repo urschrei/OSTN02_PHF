@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/urschrei/OSTN02_PHF.png?branch=master)](https://travis-ci.org/urschrei/OSTN02_PHF) [![](https://img.shields.io/crates/v/lonlat_bng.svg)](https://crates.io/crates/OSTN02_PHF) [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](license.txt)  
 
 # Description
-A Rust Crate which provides fast lookup of OSTN02 adjustments, for the conversion of ETRS89 grid coordinates to OSGB36.  
+A Rust Crate which provides fast lookup of [OSTN02 adjustments](https://www.ordnancesurvey.co.uk/business-and-government/help-and-support/navigation-technology/os-net/surveying.html), for the conversion of ETRS89 grid coordinates to OSGB36.  
 
 The crate provides base shifts. In order to obtain the actual shifts, divide each shift by `1000.`, then subtract the minimum Easting, Northing, and Height shift. All calculations should be carried out using double-precision floating point.
 
