@@ -89,8 +89,7 @@ extern adjustment get_shifts_ffi(gridrefs);
 int main(void) {
   gridrefs initial = { .easting = 651, .northing = 313 };
   adjustment adj = get_shifts_ffi(initial);
-  // printf("(%d, %d, %d)\n", adj.x_shift, adj.y_shift, adj.z_shift);
-  printf("(%d, %d)\n", initial.easting, initial.northing);
+  printf("(%f, %f, %f)\n", adj.x_shift, adj.y_shift, adj.z_shift);
   return 0;
 }
 ```
