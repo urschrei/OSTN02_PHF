@@ -31,8 +31,8 @@ assert_eq!(result, (16500, 3359, 270));
 ```
 
 # FFI Examples
+## Python
 ``` python
-# using Python
 import sys, ctypes
 from ctypes import c_uint32, c_double, Structure
 
@@ -66,6 +66,7 @@ tup = GridRefs(651, 313)
 print lib.get_shifts_ffi(tup)
 ```
 
+## C
 ``` c
 // compile with e.g. `clang -lostn02_phf -L target/release -o ostn02_shifts  src/ostn02.c` from project root
 // run with `LD_LIBRARY_PATH=target/release ./ostn02_shifts` from project root
