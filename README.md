@@ -42,7 +42,7 @@ class GridRefs(Structure):
                 ("northings", c_uint32)]
 
     def __str__(self):
-        return "({},{})".format(self.eastings, self.northings)
+        return "({}, {})".format(self.eastings, self.northings)
 
 
 class Shifts(Structure):
@@ -61,9 +61,9 @@ lib = ctypes.cdll.LoadLibrary(prefix + "ostn02_phf" + extension)
 lib.get_shifts_ffi.argtypes = (GridRefs,)
 lib.get_shifts_ffi.restype = Shifts
 
-tup = GridRefs(651, 313)
+result = GridRefs(651, 313)
 
-print lib.get_shifts_ffi(tup)
+print(lib.get_shifts_ffi(result))
 ```
 
 ## C
