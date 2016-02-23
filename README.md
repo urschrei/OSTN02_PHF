@@ -12,7 +12,7 @@ Minimum height shift = `43.982`
 Base shifts for `651, 313`: `(16500, 3359, 270)`  
 Actual shifts: `(102.775, -78.244, 44.252)`  
 
-The FFI function **does not** require the calculation above; it returns the actual shifts.
+The FFI function **does not** require the calculation above; it returns the actual shifts, or (NAN, NAN, NAN)
 
 # Rust Crate Example
 ``` rust

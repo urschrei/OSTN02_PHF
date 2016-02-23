@@ -6,6 +6,9 @@ const MIN_X_SHIFT: f64 = 86.275;
 const MIN_Y_SHIFT: f64 = -81.603;
 const MIN_Z_SHIFT: f64 = 43.982;
 
+use std::f64;
+const NAN: f64 = f64::NAN;
+
 extern crate phf;
 include!("ostn02.rs");
 
@@ -15,7 +18,7 @@ use libc::{c_double, uint32_t};
 /// Return a 3-tuple of adjustments which convert ETRS89 Eastings and Northings
 /// to OSGB36 Eastings, Northings, and Orthometric height
 fn get_shifts(tup: (u32, u32)) -> (f64, f64, f64) {
-    // look up the shifts, or return 9999.000
+    // look up the shifts, or return NAN
     let key = format!("{:03x}{:03x}", tup.1, tup.0);
     match ostn02_lookup(&*key) {
         Some(res) => {
@@ -23,7 +26,7 @@ fn get_shifts(tup: (u32, u32)) -> (f64, f64, f64) {
              res.1 as f64 / 1000. + MIN_Y_SHIFT,
              res.2 as f64 / 1000. + MIN_Z_SHIFT)
         }
-        None => (9999.000, 9999.000, 9999.000),
+        None => (NAN, NAN, NAN),
     }
 }
 
