@@ -12,11 +12,11 @@ readme = "README.md"
 # build = "src/build.rs"
 
 [build-dependencies]
-phf_codegen = "0.7.12"
+phf_codegen = "0.7.13"
 rusqlite = "0.6.0"
 
 [dependencies]
-phf = "0.7.12"
+phf = "0.7.13"
 libc = "0.2.7"
 
 [lib]
