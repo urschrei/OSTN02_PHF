@@ -38,7 +38,6 @@ pub struct GridRefs {
 }
 
 #[repr(C)]
-#[derive(Debug)]
 /// Outgoing OSTN02 Easting, Northing, and height adjustments
 pub struct Adjustment {
     pub x_shift: c_double,
