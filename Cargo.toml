@@ -4,7 +4,7 @@ description = "A PHF map of the OSTN02 grid shifts for use in transforming ETRS8
 repository = "https://github.com/urschrei/OSTN02_PHF"
 documentation = "https://urschrei.github.io/ostn02_phf/"
 keywords = ["Geo", "ETRS89", "OSGB36", "OSTN02"]
-version = "0.1.8"
+version = "0.1.9"
 authors = ["Stephan Hügel <urschrei@gmail.com>"]
 license = "MIT"
 readme = "README.md"
@@ -17,7 +17,7 @@ rusqlite = "0.6.0"
 
 [dependencies]
 phf = "0.7.13"
-libc = "0.2.7"
+libc = "0.2.8"
 
 [lib]
 name = "ostn02_phf"
