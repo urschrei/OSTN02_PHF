@@ -13,11 +13,11 @@ extern crate phf;
 include!("ostn02.rs");
 
 extern crate libc;
-use libc::{c_double, int16_t};
+use libc::{c_double, int32_t};
 
 /// Return a 3-tuple of adjustments which convert ETRS89 Eastings and Northings
 /// to OSGB36 Eastings, Northings, and Orthometric height
-fn get_shifts(tup: (i16, i16)) -> (f64, f64, f64) {
+fn get_shifts(tup: (i32, i32)) -> (f64, f64, f64) {
     // look up the shifts, or return NAN
     let key = format!("{:03x}{:03x}", tup.1, tup.0);
     match ostn02_lookup(&*key) {
@@ -33,8 +33,8 @@ fn get_shifts(tup: (i16, i16)) -> (f64, f64, f64) {
 #[repr(C)]
 /// Incoming ETRS89 kilometer-grid references
 pub struct GridRefs {
-    pub easting: int16_t,
-    pub northing: int16_t,
+    pub easting: int32_t,
+    pub northing: int32_t,
 }
 
 #[repr(C)]
@@ -46,8 +46,8 @@ pub struct Adjustment {
 }
 
 // From and Into traits for GridRefs
-impl From<(i16, i16)> for GridRefs {
-    fn from(gr: (i16, i16)) -> GridRefs {
+impl From<(i32, i32)> for GridRefs {
+    fn from(gr: (i32, i32)) -> GridRefs {
         GridRefs {
             easting: gr.0,
             northing: gr.1,
@@ -55,8 +55,8 @@ impl From<(i16, i16)> for GridRefs {
     }
 }
 
-impl From<GridRefs> for (i16, i16) {
-    fn from(gr: GridRefs) -> (i16, i16) {
+impl From<GridRefs> for (i32, i32) {
+    fn from(gr: GridRefs) -> (i32, i32) {
         (gr.easting, gr.northing)
     }
 }
@@ -87,12 +87,12 @@ impl From<Adjustment> for (f64, f64, f64) {
 /// ```python
 /// # Python example using ctypes
 /// import sys, ctypes
-/// from ctypes import c_uint32, c_double, Structure
+/// from ctypes import c_int32, c_double, Structure
 /// 
 /// 
 /// class GridRefs(Structure):
-///     _fields_ = [("eastings", c_uint32),
-///                 ("northings", c_uint32)]
+///     _fields_ = [("eastings", c_int32),
+///                 ("northings", c_int32)]
 /// 
 ///     def __str__(self):
 ///         return "({},{})".format(self.eastings, self.northings)
@@ -144,7 +144,7 @@ pub extern "C" fn get_shifts_ffi(gr: GridRefs) -> Adjustment {
 /// // remember that the actual adjustment for a coordinate is a bilinear transform, using a square
 /// // see ostn02_shifts in https://github.com/urschrei/lonlat_bng/blob/master/src/ostn02/mod.rs
 /// ```
-pub fn ostn02_lookup(key: &str) -> Option<(i16, i16, i16)> {
+pub fn ostn02_lookup(key: &str) -> Option<(i32, i32, i32)> {
     if key.is_empty() {
         return None;
     }

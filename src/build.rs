@@ -21,7 +21,7 @@ fn main() {
 
     let mut outfile = BufWriter::new(File::create(GENERATED_FILE).unwrap());
     write!(outfile,
-           "static OSTN02: phf::Map<&'static str, (i16, i16, i16)> = ")
+           "static OSTN02: phf::Map<&'static str, (i32, i32, i32)> = ")
         .unwrap();
 
     let mut stmt = conn.prepare("SELECT key, eastings_offset, northings_offset, height_offset \

@@ -34,12 +34,12 @@ assert_eq!(result, (16500, 3359, 270));
 ## Python
 ``` python
 import sys, ctypes
-from ctypes import c_uint32, c_double, Structure
+from ctypes import c_int32, c_double, Structure
 
 
 class GridRefs(Structure):
-    _fields_ = [("eastings", c_uint32),
-                ("northings", c_uint32)]
+    _fields_ = [("eastings", c_int32),
+                ("northings", c_int32)]
 
     def __str__(self):
         return "({}, {})".format(self.eastings, self.northings)
@@ -74,8 +74,8 @@ print(lib.get_shifts_ffi(result))
 #include <stdint.h>
 
 typedef struct {
-  uint32_t easting;
-  uint32_t northing;
+  int32_t easting;
+  int32_t northing;
 } gridrefs;
 
 typedef struct {

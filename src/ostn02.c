@@ -5,8 +5,8 @@
 #include <stdint.h>
 
 typedef struct {
-  int16_t easting;
-  int16_t northing;
+  int32_t easting;
+  int32_t northing;
 } gridrefs;
 
 typedef struct {

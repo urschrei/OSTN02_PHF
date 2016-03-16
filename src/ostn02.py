@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
 import sys, ctypes
-from ctypes import c_int16, c_double, Structure
+from ctypes import c_int32, c_double, Structure
 
 
 class GridRefs(Structure):
-    _fields_ = [("eastings", c_int16),
-                ("northings", c_int16)]
+    _fields_ = [("eastings", c_int32),
+                ("northings", c_int32)]
 
     def __str__(self):
         return "({}, {})".format(self.eastings, self.northings)
