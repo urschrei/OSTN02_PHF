@@ -3,7 +3,7 @@
 # Description
 A Rust Crate which provides fast lookup of [OSTN02 adjustments](https://www.ordnancesurvey.co.uk/business-and-government/help-and-support/navigation-technology/os-net/surveying.html), for the conversion of ETRS89 grid coordinates to OSGB36.  
 
-The crate provides base shifts. In order to obtain the actual shifts, divide each shift by `1000.`, then subtract the minimum Easting, Northing, and Height shift. All calculations should be carried out using double-precision floating point.
+The **crate** provides *base shifts*. In order to obtain the actual shifts, divide each shift by `1000.`, then subtract the minimum Easting, Northing, and Height shift. All calculations should be carried out using double-precision floating point.
 
 Minimum Easting shift = `86.275`  
 Minimum Northing shift = `-81.603`  
@@ -12,7 +12,7 @@ Minimum height shift = `43.982`
 Base shifts for `651, 313`: `(16500, 3359, 270)`  
 Actual shifts: `(102.775, -78.244, 44.252)`  
 
-The FFI function **does not** require the calculation above; it returns the actual shifts, or (NAN, NAN, NAN)
+The **FFI function** does not require the calculation above; it returns *the actual shifts*, or (NAN, NAN, NAN)
 
 # Rust Crate Example
 ``` rust
@@ -23,6 +23,7 @@ let e_grid = (651307.003 / 1000.) as i32;
 let n_grid = (313255.686 / 1000.) as i32;
 let key = format!("{:03x}{:03x}", n_grid, e_grid);
 // key is 13928b
+// don't use unwrap() in production
 let result = ostn02_lookup(&*key).unwrap();
 // result should be (16500, 3359, 270)
 assert_eq!(result, (16500, 3359, 270));
